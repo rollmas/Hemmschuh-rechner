@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0A0A0A">
+<title>Festhaltekraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0A0A0A;--surface:#141414;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+    --text:#F5F5F3;--muted:rgba(245,245,243,0.4);
+    --accent:#E8FF4A;--accent-dim:rgba(232,255,74,0.12);
+    --accent2:#4AFFD4;--accent2-dim:rgba(74,255,212,0.10);
+    --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;}
+  .app{min-height:100dvh;max-width:430px;margin:0 auto;display:flex;flex-direction:column;padding:env(safe-area-inset-top,20px) 0 env(safe-area-inset-bottom,20px);}
+
+  .header{padding:20px 24px 0;flex-shrink:0;}
+  .header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;}
+  .app-name{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);}
+  .version-badge{font-family:var(--mono);font-size:9px;color:var(--accent);background:var(--accent-dim);border:1px solid rgba(232,255,74,0.2);border-radius:100px;padding:2px 8px;}
+  .header-title{font-size:26px;font-weight:300;letter-spacing:-0.03em;line-height:1.1;color:var(--text);margin-top:8px;}
+  .header-title span{color:var(--accent);font-weight:500;}
+
+  .tab-bar{display:flex;gap:6px;padding:16px 24px 0;flex-shrink:0;}
+  .tab-btn{flex:1;padding:9px 6px;font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:0.04em;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--muted);cursor:pointer;text-align:center;transition:all 0.15s;-webkit-user-select:none;user-select:none;line-height:1.35;}
+  .tab-btn.af{border-color:rgba(232,255,74,0.35);color:var(--accent);background:var(--accent-dim);}
+  .tab-btn.ah{border-color:rgba(74,255,212,0.35);color:var(--accent2);background:var(--accent2-dim);}
+  .tab-btn:active{transform:scale(0.97);}
+
+  .divider{height:1px;background:var(--border);margin:16px 24px 0;}
+  .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 24px 0;}
+  .section-label{font-family:var(--mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+
+  .picker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:20px;}
+  .pb{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 4px;font-family:var(--mono);font-size:12px;color:rgba(245,245,243,0.55);cursor:pointer;text-align:center;transition:all 0.15s;line-height:1.2;-webkit-user-select:none;user-select:none;}
+  .pb.af{background:var(--accent-dim);border-color:rgba(232,255,74,0.35);color:var(--accent);}
+  .pb.ah{background:var(--accent2-dim);border-color:rgba(74,255,212,0.35);color:var(--accent2);}
+  .pb:active{transform:scale(0.95);}
+
+  .chip-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:20px;margin-left:-24px;margin-right:-24px;padding:0 24px;}
+  .chip-scroll::-webkit-scrollbar{display:none;}
+  .chip-row{display:flex;gap:6px;min-width:max-content;padding-bottom:4px;}
+  .chip{background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:8px 14px;font-family:var(--mono);font-size:12px;color:rgba(245,245,243,0.55);cursor:pointer;white-space:nowrap;transition:all 0.15s;-webkit-user-select:none;user-select:none;flex-shrink:0;}
+  .chip.af{background:var(--accent-dim);border-color:rgba(232,255,74,0.35);color:var(--accent);}
+  .chip.ah{background:var(--accent2-dim);border-color:rgba(74,255,212,0.35);color:var(--accent2);}
+  .chip:active{transform:scale(0.95);}
+
+  .result-wrap{margin:4px 0 24px;background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:28px 24px;position:relative;overflow:hidden;}
+  .result-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
+  .result-wrap.rf::before{background:linear-gradient(90deg,transparent,rgba(232,255,74,0.3),transparent);}
+  .result-wrap.rh::before{background:linear-gradient(90deg,transparent,rgba(74,255,212,0.3),transparent);}
+  .result-label{font-family:var(--mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+  .result-number{font-family:var(--mono);font-size:64px;font-weight:500;line-height:1;letter-spacing:-0.04em;transition:opacity 0.2s;}
+  .result-number.rf{color:var(--accent);}
+  .result-number.rh{color:var(--accent2);}
+  .result-number.loading{opacity:0.3;}
+  .result-unit{font-family:var(--mono);font-size:18px;font-weight:300;color:var(--muted);margin-left:6px;}
+  .result-meta{margin-top:16px;display:flex;gap:16px;flex-wrap:wrap;}
+  .meta-item{display:flex;flex-direction:column;gap:2px;}
+  .meta-key{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+  .meta-val{font-family:var(--mono);font-size:13px;font-weight:500;color:rgba(245,245,243,0.75);}
+
+  .info-note{font-family:var(--mono);font-size:10px;color:rgba(245,245,243,0.3);line-height:1.6;margin-bottom:24px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;}
+
+  .footer{padding:16px 24px;flex-shrink:0;border-top:1px solid var(--border);}
+  .footer-text{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:rgba(245,245,243,0.2);text-align:center;line-height:1.6;}
+
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  .live-dot{display:inline-block;width:5px;height:5px;border-radius:50%;animation:pulse 2s infinite;margin-right:5px;vertical-align:middle;position:relative;top:-1px;}
+  .live-dot.rf{background:var(--accent);}
+  .live-dot.rh{background:var(--accent2);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="app-name">Eisenbahnbremse</div>
+      <div class="version-badge">DB 915.0101A01</div>
+    </div>
+    <div class="header-title">Fest<span>halte</span>kraft</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn af" id="tab-fkr" onclick="switchTab('fkr')">Festhaltekraft<br>in kN</button>
+    <button class="tab-btn" id="tab-hs" onclick="switchTab('hs')">Anzahl<br>Hemmschuhe</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="scroll-area">
+
+    <div class="panel active" id="panel-fkr">
+      <div class="section-label" style="margin-top:20px;">Fahrzeuggewicht (t)</div>
+      <div class="picker-grid" id="fkr-wg"></div>
+      <div class="section-label">Neigung</div>
+      <div class="chip-scroll"><div class="chip-row" id="fkr-gr"></div></div>
+      <div class="result-wrap rf">
+        <div class="result-label"><span class="live-dot rf"></span>Erforderliche Festhaltekraft</div>
+        <div><span class="result-number rf" id="fkr-val">—</span><span class="result-unit" id="fkr-unit"></span></div>
+        <div class="result-meta">
+          <div class="meta-item"><span class="meta-key">Gewicht</span><span class="meta-val" id="fkr-mw">—</span></div>
+          <div class="meta-item"><span class="meta-key">Neigung</span><span class="meta-val" id="fkr-mg">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-hs">
+      <div class="section-label" style="margin-top:20px;">Radsätze (bis zu)</div>
+      <div class="picker-grid" id="hs-rg"></div>
+      <div class="section-label">Neigung</div>
+      <div class="chip-scroll"><div class="chip-row" id="hs-gr"></div></div>
+      <div class="result-wrap rh">
+        <div class="result-label"><span class="live-dot rh"></span>Anzahl Sicherungsmittel</div>
+        <div><span class="result-number rh" id="hs-val">—</span><span class="result-unit" id="hs-unit"></span></div>
+        <div class="result-meta">
+          <div class="meta-item"><span class="meta-key">Radsätze</span><span class="meta-val" id="hs-mr">—</span></div>
+          <div class="meta-item"><span class="meta-key">Neigung</span><span class="meta-val" id="hs-mg">—</span></div>
+        </div>
+      </div>
+      <div class="info-note">
+        Gilt nur bei ausschließlicher Verwendung von Radvorlegern bzw. Hemmschuhen.<br>
+        Bei Neigungen &gt; 20‰ ergänzende Werte in 915.0101A02.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">Sichern gegen unbeabsichtigte Bewegung · Stand 21.10<br>DB-Vorschrift 915.0101A01</div>
+  </div>
+</div>
+
+<script>
+const fkrData={40:[1,2,3,3,3,3,3,5,6,7,9,11,14,15,17,20,22],80:[2,4,5,5,6,6,6,9,11,14,17,22,28,29,33,39,44],100:[3,5,6,6,7,7,8,11,14,18,21,28,35,36,42,49,55],120:[3,6,7,8,8,9,9,13,17,21,25,33,42,43,50,58,66],160:[4,8,9,10,11,12,12,17,22,28,33,44,55,58,66,77,88],200:[5,10,11,12,13,14,15,21,28,35,42,55,69,72,83,97,110],300:[8,15,17,18,20,21,23,31,42,52,62,83,104,108,124,145,165],400:[10,20,22,24,26,28,30,42,55,69,83,110,138,143,165,193,220],600:[15,30,33,36,39,42,45,62,83,104,124,165,207,215,248,289,330],800:[20,40,44,48,52,56,60,83,110,138,165,220,275,286,330,385,440],1000:[25,50,55,60,65,70,75,104,138,172,207,275,344,358,413,481,550],1200:[30,60,66,72,78,83,89,124,165,207,248,330,413,429,495,577,660],1400:[35,70,77,84,90,97,104,145,193,241,289,385,481,500,577,673,770],1600:[40,80,88,95,103,111,119,165,220,275,330,440,550,572,660,770,879],1800:[45,90,98,107,116,125,134,186,248,310,371,495,619,643,742,866,989],2000:[50,100,109,119,129,139,149,207,275,344,413,550,687,715,825,962,1099],2200:[55,109,120,131,142,153,163,227,303,378,454,605,756,786,907,1058,1209],2400:[60,119,131,143,155,166,178,248,330,413,495,660,825,858,989,1154,1319],2600:[65,129,142,155,168,180,193,268,358,447,536,715,893,929,1072,1250,1429],3000:[75,149,164,179,193,208,223,310,413,516,619,825,1031,1072,1237,1443,1649],3500:[87,174,191,208,225,243,260,361,481,601,722,962,1202,1250,1443,1683,1923],4000:[100,199,218,238,257,277,297,413,550,687,825,1099,1374,1429,1649,1923,2198],4500:[112,223,245,268,290,312,334,464,619,773,928,1237,1546,1607,1855,2164,2473],5000:[124,248,273,297,322,346,371,516,687,859,1031,1374,1717,1786,2061,2404,2747],6000:[149,298,327,357,386,415,445,619,825,1031,1237,1649,2061,2143,2473,2885,3297]};
+const fkrW=[40,80,100,120,160,200,300,400,600,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,3000,3500,4000,4500,5000,6000];
+const fkrG=[{k:"2.5_le24",l:"2,5‰ ≤24h"},{k:"2.5_gt24",l:"2,5‰ >24h"},{k:"3",l:"3‰"},{k:"3.5",l:"3,5‰"},{k:"4",l:"4‰"},{k:"4.5",l:"4,5‰"},{k:"5",l:"5‰"},{k:"7.5",l:"7,5‰"},{k:"10",l:"10‰"},{k:"12.5",l:"12,5‰"},{k:"15",l:"15‰"},{k:"20",l:"20‰"},{k:"25",l:"25‰"},{k:"26",l:"26‰"},{k:"30",l:"30‰"},{k:"35",l:"35‰"},{k:"40",l:"40‰"}];
+
+const hsData={4:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],8:[1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3],12:[1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,4],16:[1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,4,4,5],20:[1,1,1,2,2,2,2,2,2,3,3,3,3,4,4,4,5,5,6],24:[1,2,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,6,7],28:[2,2,2,2,2,3,3,3,3,3,4,4,4,5,5,6,6,7,8],32:[2,2,2,2,3,3,3,3,3,4,4,5,5,5,6,6,7,8,9],36:[2,2,2,3,3,3,3,4,4,4,5,5,6,6,6,7,8,9,11],40:[2,2,2,3,3,3,4,4,4,5,5,6,6,7,7,8,9,9,12],50:[2,3,3,3,4,4,5,5,5,6,6,7,8,8,9,10,11,12,15],60:[3,3,3,4,4,5,5,6,6,7,8,8,9,10,10,11,13,14,17],70:[3,4,4,4,5,6,6,7,7,8,9,9,10,11,12,13,15,16,20],80:[3,4,4,5,6,6,7,7,8,9,10,11,12,13,14,15,17,18,23],90:[4,5,5,6,6,7,8,8,9,10,11,12,13,14,15,17,19,21,26],100:[4,5,5,6,7,8,9,9,10,11,12,13,15,16,17,19,21,23,29],120:[5,6,6,7,8,9,10,11,12,13,15,16,17,19,20,22,25,27,34],140:[6,7,7,8,9,11,12,13,14,15,17,18,20,22,24,26,29,32,40],160:[6,8,8,9,11,12,13,14,15,17,19,21,23,25,27,30,33,36,45],180:[7,9,9,11,12,14,15,16,17,19,22,24,26,28,30,33,37,41,51],200:[8,9,10,12,13,15,17,18,19,21,24,26,29,31,34,37,41,45,57],220:[9,10,11,13,15,17,18,20,21,23,26,29,31,34,37,40,45,50,62],250:[10,12,13,15,17,19,21,22,24,26,30,32,36,39,42,46,51,57,71]};
+const hsR=[4,8,12,16,20,24,28,32,36,40,50,60,70,80,90,100,120,140,160,180,200,220,250];
+const hsG=[{k:"2.5",l:"2,5‰"},{k:"3",l:"3‰"},{k:"3.5",l:"3,5‰"},{k:"4",l:"4‰"},{k:"4.5",l:"4,5‰"},{k:"5",l:"5‰"},{k:"5.5",l:"5,5‰"},{k:"6",l:"6‰"},{k:"6.5",l:"6,5‰"},{k:"7",l:"7‰"},{k:"8",l:"8‰"},{k:"9",l:"9‰"},{k:"10",l:"10‰"},{k:"11",l:"11‰"},{k:"12",l:"12‰"},{k:"13",l:"13‰"},{k:"14",l:"14‰"},{k:"15",l:"15‰"},{k:"20",l:"20‰"}];
+
+let sfw=1000,sfg="5",shr=40,shg="5";
+
+function buildGrid(id,items,sel,cls,onSel,lbl){
+  const g=document.getElementById(id);
+  items.forEach(v=>{
+    const b=document.createElement('button');
+    b.className='pb'+(v===sel?' '+cls:'');
+    b.textContent=lbl(v);
+    b.onclick=()=>{g.querySelectorAll('.pb').forEach(x=>x.classList.remove('af','ah'));b.classList.add(cls);onSel(v);};
+    g.appendChild(b);
+  });
+}
+
+function buildChips(id,items,sel,cls,onSel){
+  const r=document.getElementById(id);
+  items.forEach(g=>{
+    const c=document.createElement('button');
+    c.className='chip'+(g.k===sel?' '+cls:'');
+    c.textContent=g.l;
+    c.onclick=()=>{r.querySelectorAll('.chip').forEach(x=>x.classList.remove('af','ah'));c.classList.add(cls);onSel(g.k);c.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});};
+    r.appendChild(c);
+  });
+}
+
+function anim(id,val){const e=document.getElementById(id);e.classList.add('loading');setTimeout(()=>{e.textContent=val;e.classList.remove('loading');},80);}
+
+function updF(){
+  const i=fkrG.findIndex(x=>x.k===sfg);
+  anim('fkr-val',fkrData[sfw][i]);
+  document.getElementById('fkr-unit').textContent='kN';
+  document.getElementById('fkr-mw').textContent=sfw+' t';
+  document.getElementById('fkr-mg').textContent=fkrG[i]?.l||sfg;
+}
+
+function updH(){
+  const i=hsG.findIndex(x=>x.k===shg);
+  anim('hs-val',hsData[shr][i]);
+  document.getElementById('hs-unit').textContent='Stück';
+  document.getElementById('hs-mr').textContent=shr+' Radsätze';
+  document.getElementById('hs-mg').textContent=hsG[i]?.l||shg;
+}
+
+function switchTab(t){
+  document.getElementById('panel-fkr').classList.toggle('active',t==='fkr');
+  document.getElementById('panel-hs').classList.toggle('active',t==='hs');
+  document.getElementById('tab-fkr').className='tab-btn'+(t==='fkr'?' af':'');
+  document.getElementById('tab-hs').className='tab-btn'+(t==='hs'?' ah':'');
+}
+
+buildGrid('fkr-wg',fkrW,sfw,'af',v=>{sfw=v;updF();},v=>v>=1000?(v/1000)+'k':v+'t');
+buildChips('fkr-gr',fkrG,sfg,'af',k=>{sfg=k;updF();});
+buildGrid('hs-rg',hsR,shr,'ah',v=>{shr=v;updH();},v=>v+'');
+buildChips('hs-gr',hsG,shg,'ah',k=>{shg=k;updH();});
+
+updF(); updH();
+</script>
+</body>
+</html>
